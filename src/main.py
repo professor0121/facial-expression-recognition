@@ -56,6 +56,18 @@ while True:
     
     if result.face_landmarks:
         print("Face detected !")
+        for face_landmarks in result.face_landmarks:
+            for landmark in face_landmarks:
+                height,width,_=frame.shape
+                x=int(landmark.x*width)
+                y=int(landmark.y*height)
+                cv2.circle(
+                frame,
+                (x, y),
+                1,
+                (0, 255, 0),
+                -1
+                )
     
     #display webcam
     
