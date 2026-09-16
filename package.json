@@ -1,0 +1,5 @@
+{
+    "start":{
+        "dev":"nodemon src/main.py"
+    }
+}
