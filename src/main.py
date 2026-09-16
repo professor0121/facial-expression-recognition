@@ -50,6 +50,18 @@ FACE_CONNECTIONS = [
     (1, 2), (2, 98), (98, 327),
     (327, 326), (326, 2),
 ]
+IMPORTANT_LANDMARKS = [
+    1,      # Nose
+    33,     # Left eye
+    133,    # Left eye
+    159,    # Left eye
+    362,    # Right eye
+    263,    # Right eye
+    61,     # Left mouth
+    291,    # Right mouth
+    17,     # Mouth center
+]
+
 model_path ="models/face_landmarker.task"
 
 base_options=python.BaseOptions(model_asset_path=model_path)
@@ -101,6 +113,23 @@ while True:
                     1,
                     (0, 255, 0),
                     -1
+                )
+                
+            for index in IMPORTANT_LANDMARKS:
+    
+                landmark = face_landmarks[index]
+
+                x = int(landmark.x * width)
+                y = int(landmark.y * height)
+
+                cv2.putText(
+                    frame,
+                    str(index),
+                    (x + 5, y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    (0, 255, 255),
+                    1
                 )
             for start_index, end_index in FACE_CONNECTIONS:
     
