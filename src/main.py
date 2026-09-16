@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+import math
+from typing import Any
 
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -19,6 +21,9 @@ from mediapipe.tasks.python import vision
 # camera.release()
 # cv2.destroyAllWindows()
 # Face mesh connections
+
+MOUTH_OPEN_THRESHOLD = 0.30
+
 FACE_CONNECTIONS = [
     # Face outline
     (10, 338), (338, 297), (297, 332), (332, 284),
@@ -63,6 +68,14 @@ IMPORTANT_LANDMARKS = [
 ]
 
 model_path ="models/face_landmarker.task"
+
+def distance(point1, point2)->Any:
+    
+    return math.sqrt(
+        (point1.x - point2.x) ** 2 +
+        (point1.y - point2.y) ** 2
+    )
+
 
 base_options=python.BaseOptions(model_asset_path=model_path)
 
@@ -114,7 +127,40 @@ while True:
                     (0, 255, 0),
                     -1
                 )
+                upper_lip = face_landmarks[13]
+                lower_lip = face_landmarks[14]
+
+                left_corner = face_landmarks[61]
+                right_corner = face_landmarks[291]
                 
+                vertical_distance = distance(
+                    upper_lip,
+                    lower_lip
+                )
+
+                horizontal_distance = distance(
+                    left_corner,
+                    right_corner
+                )
+
+                mouth_opening_ratio = (
+                    vertical_distance / horizontal_distance
+                )
+                
+                if mouth_opening_ratio >= MOUTH_OPEN_THRESHOLD:
+                    mouth_status = "MOUTH OPEN"
+                else:
+                    mouth_status = "MOUTH CLOSED"
+                cv2.putText(
+                    frame,
+                    f"Mouth Ratio: {mouth_opening_ratio:.2f}",
+                    (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 255, 255),
+                    2
+                )
+                                
             for index in IMPORTANT_LANDMARKS:
     
                 landmark = face_landmarks[index]
